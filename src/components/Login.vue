@@ -4,13 +4,13 @@
       <div id="logo-box">
         <img src="../assets/img/logo.png" alt>
       </div>
-      <el-form :model="loginForm" ref="loginFormRef">
-        <el-form-item>
+      <el-form :model="loginForm" ref="loginFormRef" :rules="loginFormRules">
+        <el-form-item prop="username">
           <el-input v-model="loginForm.username">
             <i slot="prefix" class="iconfont icon-user"></i>
           </el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input v-model="loginForm.password">
             <i slot="prefix" class="iconfont icon-3702mima"></i>
           </el-input>
@@ -18,7 +18,7 @@
         <el-row>
           <el-col :push="15">
             <el-button type="primary" @click="login">登录</el-button>
-            <el-button type="info">重置</el-button>
+            <el-button type="info" @click="resetForm">重置</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -33,12 +33,32 @@ export default {
       loginForm: {
         username: '',
         password: ''
+      },
+      loginFormRules: {
+        username: [
+          // required:非空  message:错误提示  trigger:触发校验机制
+          { required: true, message: '用户名必填', trigger: 'blur' }
+          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }       长度规则限制
+        ],
+        password: [
+          {required: true, message: '密码必填', trigger: 'blur'}
+        ]
       }
     }
   },
   methods: {
     login() {
-      this.$router.push('/home')
+      // 表单校验没有问题时，才能跳转
+      this.$refs.loginFormRef.validate(valid => {
+        // valid:校验成功/失败的标志，true为成功，false为失败
+        // console.log(valid)
+        if (valid === true) {
+          this.$router.push('/home')
+        }
+      })
+    },
+    resetForm() {
+      this.$refs.loginFormRef.resetFields()
     }
   }
 }
