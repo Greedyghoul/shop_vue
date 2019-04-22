@@ -4,12 +4,14 @@ import Router from 'vue-router'
 
 // 引入各页面路由
 import Login from '@/components/Login'
+import Home from '@/components/Home'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     // {path: '/', name: 'HelloWorld', component: HelloWorld},
-    {path: '/login', component: Login}
+    {path: '/login', component: Login},
+    {path: '/home', component: Home}
   ]
 })

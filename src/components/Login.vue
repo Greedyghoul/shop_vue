@@ -17,7 +17,7 @@
         </el-form-item>
         <el-row>
           <el-col :push="15">
-            <el-button type="primary">登录</el-button>
+            <el-button type="primary" @click="login">登录</el-button>
             <el-button type="info">重置</el-button>
           </el-col>
         </el-row>
@@ -34,6 +34,11 @@ export default {
         username: '',
         password: ''
       }
+    }
+  },
+  methods: {
+    login() {
+      this.$router.push('/home')
     }
   }
 }
