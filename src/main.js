@@ -5,6 +5,9 @@ import router from './router'
 // 引入全局css样式
 import './assets/css/global.css'
 
+// 引入图标css样式
+import './assets/fonts/iconfont.css'
+
 // 引入element-ui
 import ElementUI from 'element-ui'
 Vue.use(ElementUI)
