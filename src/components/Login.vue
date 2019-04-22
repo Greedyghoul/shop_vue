@@ -40,19 +40,31 @@ export default {
           { required: true, message: '用户名必填', trigger: 'blur' }
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }       长度规则限制
         ],
-        password: [
-          {required: true, message: '密码必填', trigger: 'blur'}
-        ]
+        password: [{ required: true, message: '密码必填', trigger: 'blur' }]
       }
     }
   },
   methods: {
     login() {
       // 表单校验没有问题时，才能跳转
-      this.$refs.loginFormRef.validate(valid => {
+      this.$refs.loginFormRef.validate(async valid => {
         // valid:校验成功/失败的标志，true为成功，false为失败
         // console.log(valid)
         if (valid === true) {
+          // 表单校验后，要进行真实性校验，即验证用户名和密码是否正确
+          // const { data: dt } = await this.$http.post('/login', {
+          //   username: this.loginForm.username,
+          //   password: this.loginForm.password
+          // })
+          // 以上简写
+          const { data: dt } = await this.$http.post('/login', this.loginForm)
+          // console.log(dt)
+          // 登录失败提示
+          if (dt.meta.status !== 200) {
+            return this.$message.error(dt.meta.msg)
+          }
+          // 登录成功，保存为sessionStorage
+          window.sessionStorage.setItem('token', dt.data.token)
           this.$router.push('/home')
         }
       })
