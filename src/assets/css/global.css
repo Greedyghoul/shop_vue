@@ -3,3 +3,11 @@ html,body,#app{
     margin:0;
     padding:0;
 }
+
+/* 后台左侧按钮样式 */
+.el-menu-item, .el-submenu__title {
+    font-size: 13px;
+}
+.iconfont {
+    margin-right: 10px;
+}

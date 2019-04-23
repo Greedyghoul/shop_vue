@@ -21,11 +21,11 @@
           <el-submenu
           :index="item.id"
           :style="{width:isshow?'65px':'200px'}"
-          v-for="item in menuLise"
+          v-for="(item,k) in menuLise"
           :key="item.id"
           >
             <template slot="title">
-              <i class="el-icon-location"></i>
+              <i :class="'iconfont icon-' + iconList[k]"></i>
               <span>{{item.authName}}</span>
             </template>
             <el-menu-item
@@ -33,7 +33,8 @@
             v-for="item2 in item.children"
             :key="item2.id"
             >
-              {{item2.authName}}
+              <i class="el-icon-menu"></i>
+              <span>{{item2.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -53,7 +54,9 @@ export default {
     return {
       isshow: false,
       // 接收左侧导航的数据成员
-      menuLise: []
+      menuLise: [],
+      // 图标系列
+      iconList: ['users', 'tijikongjian', 'shangpin', 'danju', 'baobiao']
     }
   },
   methods: {
