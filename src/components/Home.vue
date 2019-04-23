@@ -18,21 +18,23 @@
         :collapse="isshow"
         :collapse-transition="false"
         >
-          <el-submenu index="1" :style="{width:isshow?'65px':'200px'}" >
+          <el-submenu
+          :index="item.id"
+          :style="{width:isshow?'65px':'200px'}"
+          v-for="item in menuLise"
+          :key="item.id"
+          >
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <span>{{item.authName}}</span>
             </template>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-submenu>
-          <el-submenu index="2" :style="{width:isshow?'65px':'200px'}" >
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航二</span>
-            </template>
-            <el-menu-item index="2-1">选项1</el-menu-item>
-            <el-menu-item index="2-2">选项2</el-menu-item>
+            <el-menu-item
+            index="item.id + '-' + item2.id"
+            v-for="item2 in item.children"
+            :key="item2.id"
+            >
+              {{item2.authName}}
+            </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
@@ -43,9 +45,25 @@
 
 <script>
 export default {
+  created() {
+    // 后台主页加载的时候，即执行函数获取左侧导航数据
+    this.getMenuList()
+  },
   data() {
     return {
-      isshow: false
+      isshow: false,
+      // 接收左侧导航的数据成员
+      menuLise: []
+    }
+  },
+  methods: {
+    async getMenuList() {
+      const {data: dt} = await this.$http('/menus')
+      console.log(dt)
+      if (dt.meta.status !== 200) {
+        return this.$message.error(dt.meta.msg)
+      }
+      this.menuLise = dt.data
     }
   }
 }
