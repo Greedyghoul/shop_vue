@@ -5,33 +5,33 @@
         <img src="../assets/img/heima.png">
         <span>电商后台管理系统</span>
       </div>
-      <el-button type="info">退出</el-button>
+      <el-button type="info" @click="logout">退出</el-button>
     </el-header>
     <el-container>
       <el-aside :style="{width:isshow?'65px':'200px'}">
         <div class="toggle_bar" :style="{width:isshow?'65px':'200px'}" @click="isshow=!isshow">|||</div>
         <el-menu
-        background-color="#333744"
-        text-color="#fff"
-        active-text-color="#ffd04b"
-        :unique-opened="true"
-        :collapse="isshow"
-        :collapse-transition="false"
+          background-color="#333744"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          :unique-opened="true"
+          :collapse="isshow"
+          :collapse-transition="false"
         >
           <el-submenu
-          :index="item.id"
-          :style="{width:isshow?'65px':'200px'}"
-          v-for="(item,k) in menuLise"
-          :key="item.id"
+            :index="item.id + ''"
+            :style="{width:isshow?'65px':'200px'}"
+            v-for="(item,k) in menuLise"
+            :key="item.id"
           >
             <template slot="title">
               <i :class="'iconfont icon-' + iconList[k]"></i>
               <span>{{item.authName}}</span>
             </template>
             <el-menu-item
-            index="item.id + '-' + item2.id"
-            v-for="item2 in item.children"
-            :key="item2.id"
+              :index="item.id + '-' + item2.id"
+              v-for="item2 in item.children"
+              :key="item2.id"
             >
               <i class="el-icon-menu"></i>
               <span>{{item2.authName}}</span>
@@ -39,7 +39,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -61,12 +63,26 @@ export default {
   },
   methods: {
     async getMenuList() {
-      const {data: dt} = await this.$http('/menus')
-      console.log(dt)
+      const { data: dt } = await this.$http('/menus')
+      // console.log(dt)
       if (dt.meta.status !== 200) {
         return this.$message.error(dt.meta.msg)
       }
       this.menuLise = dt.data
+    },
+    logout() {
+      this.$confirm('确认退出登录吗?', '退出', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          // 退出后，删除token
+          window.sessionStorage.removeItem('token')
+          this.$router.push('/login')
+        })
+        // 此处catch函数必须保留
+        .catch(() => {})
     }
   }
 }
@@ -87,7 +103,7 @@ export default {
       font-size: 22px;
       display: flex;
       align-items: center;
-      user-select: none;      // 禁止选中文字内容
+      user-select: none; // 禁止选中文字内容
       img {
         width: 50px;
         height: 50px;
@@ -104,7 +120,7 @@ export default {
       color: #fff;
       font-size: 12px;
       line-height: 25px;
-      letter-spacing: 0.1em;   // 设置字与字之间的间隔
+      letter-spacing: 0.1em; // 设置字与字之间的间隔
       cursor: pointer;
       user-select: none;
     }
