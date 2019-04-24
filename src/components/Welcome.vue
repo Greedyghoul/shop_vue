@@ -1,6 +1,6 @@
 <template>
     <div>
-        用户管理
+        Welcome to 后台管理系统
     </div>
 </template>
 

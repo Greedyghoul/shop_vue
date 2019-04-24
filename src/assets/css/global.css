@@ -1,13 +1,30 @@
-html,body,#app{
-    height:100%;
-    margin:0;
-    padding:0;
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* 限制页面宽度 */
+  min-width: 1024px;
 }
 
 /* 后台左侧按钮样式 */
-.el-menu-item, .el-submenu__title {
-    font-size: 13px;
+.el-menu-item,
+.el-submenu__title {
+  font-size: 13px;
 }
+
 .iconfont {
-    margin-right: 10px;
+  margin-right: 10px;
+}
+
+/* 设置后台卡片区样式 */
+.el-card {
+  margin-top: 15px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .15)!important;
+}
+/* 设置表格样式 */
+.el-table {
+    margin-top: 15px;
+    font-size: 12px;
 }
