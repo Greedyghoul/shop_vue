@@ -13,7 +13,7 @@
         <el-menu
           background-color="#333744"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409EFF"
           :unique-opened="true"
           :collapse="isshow"
           :collapse-transition="false"

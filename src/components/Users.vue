@@ -12,8 +12,16 @@
       <!-- 搜索区 -->
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请输入搜索内容" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input
+            placeholder="请输入搜索内容"
+            class="input-with-select"
+            clearable
+            v-model="queryData.query"
+            @clear="search()"
+            @keydown.enter.native="search()"
+          >
+            <!-- 以上按键修饰符使用native的作用是激活组件原始的内部html特性 -->
+            <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
           </el-input>
         </el-col>
         <el-col :span="8">
@@ -33,7 +41,15 @@
           <el-switch v-model="info.row.mg_state" slot-scope="info"></el-switch>
           <!-- <span slot-scope="info">{{info.row}}</span> -->
         </el-table-column>
-        <el-table-column prop="address" label="操作"></el-table-column>
+        <el-table-column prop="address" label="操作">
+          <el-row>
+            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+            </el-tooltip>
+          </el-row>
+        </el-table-column>
       </el-table>
 
       <!-- 分页区 -->
@@ -90,6 +106,10 @@ export default {
     handleCurrentChange(arg) {
       // console.log(arg)
       this.queryData.pagenum = arg
+      this.getTableData()
+    },
+    // 关键字搜索
+    search() {
       this.getTableData()
     }
   }
