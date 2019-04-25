@@ -76,19 +76,27 @@
         </el-table-column>
         <el-table-column prop="address" label="操作">
           <!-- 添加操作按钮 -->
-          <el-row>
-            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="分配角色"
-              placement="top"
-              :enterable="false"
-            >
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
-            </el-tooltip>
-          </el-row>
+          <!-- 在操作列中，修改、删除、分配角色 按钮都需要获取到当前的每条记录信息，将对应用户ID回传，此时需要使用作用域插槽 -->
+          <template slot-scope="info">
+            <el-row>
+              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+                @click="delUser(info.row.id)"
+              ></el-button>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="分配角色"
+                placement="top"
+                :enterable="false"
+              >
+                <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              </el-tooltip>
+            </el-row>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -143,7 +151,9 @@ export default {
       },
       // 表单验证规则
       addFormRules: {
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         email: [{ required: true, message: '请输入邮箱地址', trigger: 'blur' }],
         // 自定义检测规则应用
@@ -204,6 +214,25 @@ export default {
           this.getTableData()
         }
       })
+    },
+    // 删除用户信息
+    delUser(id) {
+      // console.log(id)
+      this.$confirm('确认删除该用户吗?', '删除用户', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          // 发送axios正式删除用户信息，并接受返回信息
+          const { data: dt } = await this.$http.delete('users/' + id)
+          // console.log(dt)
+          // 删除成功提示
+          this.$message.success(dt.meta.msg)
+          // 删除成功后重新获取并刷新数据
+          this.getTableData()
+        })
+        .catch(() => {})
     }
   }
 }
