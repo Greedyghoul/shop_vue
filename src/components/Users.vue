@@ -1,11 +1,7 @@
 <template>
   <div>
     <!-- 面包屑导航 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <crumb nav="用户"></crumb>
 
     <!-- 卡片区 -->
     <el-card class="box-card">
@@ -64,17 +60,17 @@
 
       <!-- 表格区 -->
       <el-table :data="tableData" stripe style="width: 100%" border>
-        <el-table-column type="index" label="序号"></el-table-column>
-        <el-table-column prop="username" label="用户名" width="100"></el-table-column>
-        <el-table-column prop="mobile" label="手机号码" width="120"></el-table-column>
-        <el-table-column prop="role_name" label="角色" width="120"></el-table-column>
-        <el-table-column prop="email" label="邮箱" width="160"></el-table-column>
+        <el-table-column type="index" label="序号" width="60"></el-table-column>
+        <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column prop="mobile" label="手机号码" width="140"></el-table-column>
+        <el-table-column prop="role_name" label="角色" width="140"></el-table-column>
+        <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
         <el-table-column prop="mg_state" label="状态" width="100">
           <!-- 此处为难点重点记忆 -->
           <el-switch v-model="info.row.mg_state" slot-scope="info"></el-switch>
           <!-- <span slot-scope="info">{{info.row}}</span> -->
         </el-table-column>
-        <el-table-column prop="address" label="操作" width="194">
+        <el-table-column prop="address" label="操作" width="264">
           <!-- 添加操作按钮 -->
           <!-- 在操作列中，修改、删除、分配角色 按钮都需要获取到当前的每条记录信息，将对应用户ID回传，此时需要使用作用域插槽 -->
           <template slot-scope="info">

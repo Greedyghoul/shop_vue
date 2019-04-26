@@ -11,9 +11,15 @@ import './assets/fonts/iconfont.css'
 // 引入axios
 import axios from 'axios'
 
+// 引入面包屑导航组件
+import Crumb from './components/Crumb.vue'
+
 // 引入element-ui
 import ElementUI from 'element-ui'
 Vue.use(ElementUI)
+
+// 注册面包屑导航
+Vue.component('crumb', Crumb)
 
 // 配置axios
 axios.defaults.baseURL = 'http://127.0.0.1:11333/api/private/v1/'
