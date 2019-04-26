@@ -27,7 +27,7 @@
         <el-col :span="8">
           <!-- 添加新用户 -->
           <el-button type="primary" @click="showAddDialog = true">添加用户</el-button>
-          <!-- 对话框 -->
+          <!-- 添加用户对话框 -->
           <el-dialog
             title="添加用户"
             :visible.sync="showAddDialog"
@@ -64,7 +64,7 @@
 
       <!-- 表格区 -->
       <el-table :data="tableData" stripe style="width: 100%" border>
-        <el-table-column type="index" label="序号" width="60"></el-table-column>
+        <el-table-column type="index" label="序号"></el-table-column>
         <el-table-column prop="username" label="用户名" width="100"></el-table-column>
         <el-table-column prop="mobile" label="手机号码" width="120"></el-table-column>
         <el-table-column prop="role_name" label="角色" width="120"></el-table-column>
@@ -74,12 +74,41 @@
           <el-switch v-model="info.row.mg_state" slot-scope="info"></el-switch>
           <!-- <span slot-scope="info">{{info.row}}</span> -->
         </el-table-column>
-        <el-table-column prop="address" label="操作">
+        <el-table-column prop="address" label="操作" width="194">
           <!-- 添加操作按钮 -->
           <!-- 在操作列中，修改、删除、分配角色 按钮都需要获取到当前的每条记录信息，将对应用户ID回传，此时需要使用作用域插槽 -->
           <template slot-scope="info">
             <el-row>
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="showEdit(info.row.id)"
+              ></el-button>
+              <!-- 修改用户信息对话框 -->
+              <el-dialog title="修改用户信息" :visible.sync="showEditDialog" width="50%">
+                <el-form
+                  :model="editRuleForm"
+                  :rules="editFormRules"
+                  ref="editFormRef"
+                  label-width="100px"
+                >
+                  <el-form-item label="用户名" prop="username">
+                    <el-input v-model="editRuleForm.username" disabled></el-input>
+                  </el-form-item>
+                  <el-form-item label="邮箱" prop="email">
+                    <el-input v-model="editRuleForm.email"></el-input>
+                  </el-form-item>
+                  <el-form-item label="手机号" prop="mobile">
+                    <el-input v-model="editRuleForm.mobile"></el-input>
+                  </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="showEditDialog = false">取 消</el-button>
+                  <el-button type="primary" @click="editUser()">确 定</el-button>
+                </span>
+              </el-dialog>
+              <!-- 删除按钮 -->
               <el-button
                 type="danger"
                 icon="el-icon-delete"
@@ -161,6 +190,24 @@ export default {
           { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
+      },
+      // 修改用户对话框开关
+      showEditDialog: false,
+      // 修改用户信息对话框表单规则
+      editRuleForm: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 修改用户信息表单验证规则
+      editFormRules: {
+        email: [{ required: true, message: '请输入邮箱地址', trigger: 'blur' }],
+        // 自定义检测规则应用
+        mobile: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
       }
     }
   },
@@ -230,6 +277,40 @@ export default {
           // 删除成功提示
           this.$message.success(dt.meta.msg)
           // 删除成功后重新获取并刷新数据
+          this.getTableData()
+        })
+        .catch(() => {})
+    },
+    // 点击修改按钮触发的事件
+    async showEdit(id) {
+      this.showEditDialog = true
+      // 通过axios查询用户信息
+      const { data: dt } = await this.$http.get('users/' + id)
+      console.log(dt)
+      if (dt.meta.status !== 200) {
+        return this.$message.error(dt.meta.msg)
+      }
+      this.editRuleForm = dt.data
+    },
+    // 修改用户信息
+    editUser() {
+      // console.log(id)
+      this.$confirm('确认修改该用户信息吗?', '修改', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const { data: dt } = await this.$http.put(
+            'users/' + this.editRuleForm.id,
+            this.editRuleForm
+          )
+          console.log(dt)
+          if (dt.meta.status !== 200) {
+            return this.$message.error(dt.meta.msg)
+          }
+          // 修改成功后，重新获取用户列表，关闭对话框
+          this.showEditDialog = false
           this.getTableData()
         })
         .catch(() => {})
