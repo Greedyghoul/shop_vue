@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 面包屑导航 -->
-    <crumb nav="用户"></crumb>
+    <crumb nav1="用户" nav2="用户"></crumb>
 
     <!-- 卡片区 -->
     <el-card class="box-card">

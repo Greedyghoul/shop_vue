@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 面包屑导航 -->
-    <crumb nav="权限"></crumb>
+    <crumb nav1="权限" nav2="权限"></crumb>
 
     <!-- 卡片区 -->
     <el-card class="box-card">
