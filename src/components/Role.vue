@@ -19,7 +19,7 @@
               :style="{'border-bottom': '1px solid rgb(235, 238, 245)', 'border-top': k === 0 ? '1px solid rgb(235, 238, 245)' : ''}"
             >
               <el-col :span="6">
-                <el-tag closable>{{v.authName}}</el-tag>
+                <el-tag closable @close="delRights(info.row, v.id)">{{v.authName}}</el-tag>
                 <span class="el-icon-caret-right"></span>
               </el-col>
               <el-col :span="18">
@@ -30,7 +30,11 @@
                   :style="{'border-top':k===0?'':'1px solid rgb(235, 238, 245)'}"
                 >
                   <el-col :span="6">
-                    <el-tag type="success" closable>{{vv.authName}}</el-tag>
+                    <el-tag
+                      type="success"
+                      closable
+                      @close="delRights(info.row, vv.id)"
+                    >{{vv.authName}}</el-tag>
                     <span class="el-icon-caret-right"></span>
                   </el-col>
                   <el-col :span="18">
@@ -39,6 +43,7 @@
                       v-for="vvv in vv.children"
                       :key="vvv.id"
                       closable
+                      @close="delRights(info.row, vvv.id)"
                     >{{vvv.authName}}</el-tag>
                   </el-col>
                 </el-row>
@@ -87,6 +92,30 @@ export default {
       })
       this.rolesData = dt.data
       // console.log(this.rolesData)
+    },
+    // 删除角色权限
+    delRights(roleinfo, rid) {
+      // console.log(id)    角色id
+      // console.log(rid)   权限id
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const { data: dt } = await this.$http.delete(
+            `roles/${roleinfo.id}/rights/${rid}`
+          )
+          // console.log(dt)
+          if (dt.meta.status !== 200) {
+            return this.$message.error(dt.meta.msg)
+          }
+          // 删除成功后，提示,并刷新当前角色权限列表
+          this.$message.success(dt.meta.msg)
+          // 改变角色信息，即可实现不刷新变更当前角色权限信息
+          roleinfo.son = dt.data
+        })
+        .catch(() => {})
     }
   }
 }
