@@ -67,7 +67,7 @@
         <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
         <el-table-column prop="mg_state" label="状态" width="100">
           <!-- 此处为难点重点记忆 -->
-          <el-switch v-model="info.row.mg_state" slot-scope="info"></el-switch>
+          <el-switch v-model="info.row.mg_state" slot-scope="info" @change="stateChange(info.row.id,info.row.mg_state)"></el-switch>
           <!-- <span slot-scope="info">{{info.row}}</span> -->
         </el-table-column>
         <el-table-column prop="address" label="操作" width="264">
@@ -111,6 +111,7 @@
                 size="mini"
                 @click="delUser(info.row.id)"
               ></el-button>
+              <!-- 分配角色按钮 -->
               <el-tooltip
                 class="item"
                 effect="dark"
@@ -118,8 +119,39 @@
                 placement="top"
                 :enterable="false"
               >
-                <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+                <el-button
+                  type="warning"
+                  icon="el-icon-setting"
+                  size="mini"
+                  @click="showRoleDialog(info.row)"
+                ></el-button>
               </el-tooltip>
+              <!-- 分配角色对话框 -->
+              <el-dialog title="用户分配角色" :visible.sync="setRolesVisible" width="50%" @close="$refs.setRoleRef.resetFields()">
+                <el-form
+                  ref="setRoleRef"
+                  :model="setRoleForm"
+                  label-width="120px"
+                  :rules="roleListRules"
+                >
+                  <el-form-item label="当前的用户：">{{setRoleForm.username}}</el-form-item>
+                  <el-form-item label="当前的角色：">{{setRoleForm.role_name}}</el-form-item>
+                  <el-form-item label="分配新角色：" prop="rid">
+                    <el-select v-model="setRoleForm.rid" placeholder="请选择">
+                      <el-option
+                        v-for="v in roleList"
+                        :key="v.id"
+                        :label="v.roleName"
+                        :value="v.id"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="setRolesVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="setRoles()">确 定</el-button>
+                </span>
+              </el-dialog>
             </el-row>
           </template>
         </el-table-column>
@@ -203,6 +235,22 @@ export default {
         mobile: [
           { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
+        ]
+      },
+      // 分配角色对话框显示开关
+      setRolesVisible: false,
+      // 声明分配角色表单数据对象
+      setRoleForm: {
+        id: 0,
+        userName: '',
+        rid: 0
+      },
+      // 角色列表数据信息
+      roleList: [],
+      // 分配角色角色列表规则
+      roleListRules: {
+        rid: [
+          { required: true, message: '请选择要分配的角色', trigger: 'change' }
         ]
       }
     }
@@ -301,7 +349,7 @@ export default {
             'users/' + this.editRuleForm.id,
             this.editRuleForm
           )
-          console.log(dt)
+          // console.log(dt)
           if (dt.meta.status !== 200) {
             return this.$message.error(dt.meta.msg)
           }
@@ -310,6 +358,50 @@ export default {
           this.getTableData()
         })
         .catch(() => {})
+    },
+    // 显示分配角色对话框，并展示角色信息
+    async showRoleDialog(userInfo) {
+      // console.log(userInfo)
+      const { data: dt } = await this.$http.get('roles')
+      // console.log(dt)
+      if (dt.meta.status !== 200) {
+        return this.$message.error(dt.meta.msg)
+      }
+      // 获取角色列表信息
+      this.roleList = dt.data
+      // 获取用户信息后，显示对话框，并展示在对话框中
+      this.setRolesVisible = true
+      // 传入的参数中，已经包含用户基本信息，故不需要进行axios请求，可以直接赋值给表单
+      this.setRoleForm = userInfo
+      // console.log(this.setRoleform)
+    },
+    // 确认分配用户角色
+    setRoles() {
+      this.$refs.setRoleRef.validate(async valid => {
+        if (valid) {
+          const { data: dt } = await this.$http.put(
+            `users/${this.setRoleForm.id}/role`,
+            this.setRoleForm
+          )
+          // console.log(dt)
+          if (dt.meta.status !== 200) {
+            return this.$message.error(dt.meta.msg)
+          }
+          // 设置用户角色成功后，关闭对话框，提示成功，刷新用户信息
+          this.setRolesVisible = false
+          this.$message.success(dt.meta.msg)
+          this.getTableData()
+        }
+      })
+    },
+    // 修改用户状态
+    async stateChange(uid, type) {
+      const {data: dt} = await this.$http.put(`users/${uid}/state/${type}`)
+      // console.log(dt)
+      if (dt.meta.status !== 200) {
+        return this.$message.error(dt.meta.msg)
+      }
+      this.$message.success(dt.meta.msg)
     }
   }
 }
